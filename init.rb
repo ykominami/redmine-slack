@@ -23,7 +23,8 @@ Redmine::Plugin.register :redmine_slack do
 		:partial => 'settings/slack_settings'
 end
 
-ActionDispatch::Callbacks.to_prepare do
+target_class = ActionDispatch::Callbacks.respond_to?( :to_prepare ) ? ActionDispatch::Callbacks : ActiveSupport::Reloader
+target_class.to_prepare do
 	require_dependency 'issue'
 	unless Issue.included_modules.include? RedmineSlack::IssuePatch
 		Issue.send(:include, RedmineSlack::IssuePatch)
